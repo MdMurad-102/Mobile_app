@@ -45,7 +45,7 @@ app.get('/health', (req, res) => {
 // ============================================
 
 // Register new user
-app.post('/api/users/register', async (req, res) => {
+app.post('/users/register', async (req, res) => {
     const { email, name, password } = req.body;
 
     try {
@@ -78,7 +78,7 @@ app.post('/api/users/register', async (req, res) => {
 });
 
 // Login user
-app.post('/api/users/login', async (req, res) => {
+app.post('/users/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -102,7 +102,7 @@ app.post('/api/users/login', async (req, res) => {
 });
 
 // Get user by email
-app.get('/api/users/:email', async (req, res) => {
+app.get('/users/:email', async (req, res) => {
     const { email } = req.params;
 
     try {
@@ -126,7 +126,7 @@ app.get('/api/users/:email', async (req, res) => {
 });
 
 // Update user profile
-app.put('/api/users/:userId', async (req, res) => {
+app.put('/users/:userId', async (req, res) => {
     const { userId } = req.params;
     const updates = req.body;
 
@@ -161,7 +161,7 @@ app.put('/api/users/:userId', async (req, res) => {
 // ============================================
 
 // Track water intake
-app.post('/api/water/track', async (req, res) => {
+app.post('/water/track', async (req, res) => {
     const { userId, amount, goal } = req.body;
     const date = new Date().toISOString().split('T')[0];
 
@@ -203,7 +203,7 @@ app.post('/api/water/track', async (req, res) => {
 });
 
 // Get water tracking for today
-app.get('/api/water/today/:userId', async (req, res) => {
+app.get('/water/today/:userId', async (req, res) => {
     const { userId } = req.params;
     const date = new Date().toISOString().split('T')[0];
 
@@ -224,7 +224,7 @@ app.get('/api/water/today/:userId', async (req, res) => {
 });
 
 // Reset water tracking for today
-app.post('/api/water/reset', async (req, res) => {
+app.post('/water/reset', async (req, res) => {
     const { userId } = req.body;
     const date = new Date().toISOString().split('T')[0];
 
@@ -252,7 +252,7 @@ app.post('/api/water/reset', async (req, res) => {
 // ============================================
 
 // Get user's saved recipes (from all their scheduled meals)
-app.get('/api/recipes/custom/:userId', async (req, res) => {
+app.get('/recipes/custom/:userId', async (req, res) => {
     const { userId } = req.params;
 
     try {
@@ -315,7 +315,7 @@ app.get('/api/recipes/custom/:userId', async (req, res) => {
 // ============================================
 
 // Create or update daily meal plan (all 4 meals: breakfast, lunch, dinner, snacks)
-app.post('/api/meals/daily-plan', async (req, res) => {
+app.post('/meals/daily-plan', async (req, res) => {
     const { userId, date, meals } = req.body;
     // meals should be an object: { breakfast: {...}, lunch: {...}, dinner: {...}, snacks: {...}, waterGlasses: number }
 
@@ -374,7 +374,7 @@ app.post('/api/meals/daily-plan', async (req, res) => {
 });
 
 // Dedicated endpoint for water intake updates (independent from meals)
-app.patch('/api/meals/water-intake', async (req, res) => {
+app.patch('/meals/water-intake', async (req, res) => {
     const { userId, date, waterGlasses } = req.body;
 
     try {
@@ -423,7 +423,7 @@ app.patch('/api/meals/water-intake', async (req, res) => {
 });
 
 // Update meal consumed state (independent endpoint for marking meals as eaten)
-app.patch('/api/meals/consumed', async (req, res) => {
+app.patch('/meals/consumed', async (req, res) => {
     const { userId, date, mealId, consumed } = req.body;
 
     console.log('📥 Received consumed update request:', { userId, date, mealId, consumed });
@@ -519,7 +519,7 @@ app.patch('/api/meals/consumed', async (req, res) => {
 });
 
 // Add individual meal to a specific meal type (breakfast, lunch, dinner, or snacks)
-app.post('/api/meals/add', async (req, res) => {
+app.post('/meals/add', async (req, res) => {
     const { userId, date, mealType, meal } = req.body;
     // mealType: 'breakfast', 'lunch', 'dinner', or 'snacks'
 
@@ -575,7 +575,7 @@ app.post('/api/meals/add', async (req, res) => {
 });
 
 // Get meals for a specific date
-app.get('/api/meals/date/:userId/:date', async (req, res) => {
+app.get('/meals/date/:userId/:date', async (req, res) => {
     const { userId, date } = req.params;
 
     try {
@@ -601,7 +601,7 @@ app.get('/api/meals/date/:userId/:date', async (req, res) => {
 });
 
 // Get meals for a date range
-app.get('/api/meals/range/:userId', async (req, res) => {
+app.get('/meals/range/:userId', async (req, res) => {
     const { userId } = req.params;
     const { startDate, endDate } = req.query;
 
@@ -633,7 +633,7 @@ app.get('/api/meals/range/:userId', async (req, res) => {
 });
 
 // Mark meal as consumed
-app.post('/api/meals/consume', async (req, res) => {
+app.post('/meals/consume', async (req, res) => {
     const { userId, date, mealType } = req.body;
 
     try {
@@ -657,7 +657,7 @@ app.post('/api/meals/consume', async (req, res) => {
 });
 
 // Delete a specific meal from a meal type
-app.delete('/api/meals/:userId/:date/:mealType', async (req, res) => {
+app.delete('/meals/:userId/:date/:mealType', async (req, res) => {
     const { userId, date, mealType } = req.params;
 
     try {
@@ -709,7 +709,7 @@ app.delete('/api/meals/:userId/:date/:mealType', async (req, res) => {
 // ============================================
 
 // Add progress entry
-app.post('/api/progress', async (req, res) => {
+app.post('/progress', async (req, res) => {
     const { userId, weight, bodyFat, muscleMass, notes } = req.body;
     const date = new Date().toISOString().split('T')[0];
 
@@ -732,7 +732,7 @@ app.post('/api/progress', async (req, res) => {
 });
 
 // Get progress entries
-app.get('/api/progress/:userId', async (req, res) => {
+app.get('/progress/:userId', async (req, res) => {
     const { userId } = req.params;
     const { startDate, endDate } = req.query;
 
@@ -764,7 +764,7 @@ app.get('/api/progress/:userId', async (req, res) => {
 // ============================================
 
 // Track daily nutrition
-app.post('/api/nutrition/track', async (req, res) => {
+app.post('/nutrition/track', async (req, res) => {
     const { userId, date, calories, protein, carbs, fat, fiber, sugar, sodium } = req.body;
 
     try {
@@ -799,7 +799,7 @@ app.post('/api/nutrition/track', async (req, res) => {
 });
 
 // Get daily nutrition
-app.get('/api/nutrition/:userId/:date', async (req, res) => {
+app.get('/nutrition/:userId/:date', async (req, res) => {
     const { userId, date } = req.params;
 
     try {
@@ -828,7 +828,7 @@ app.get('/api/nutrition/:userId/:date', async (req, res) => {
 });
 
 // Get nutrition for date range
-app.get('/api/nutrition/range/:userId', async (req, res) => {
+app.get('/nutrition/range/:userId', async (req, res) => {
     const { userId } = req.params;
     const { startDate, endDate } = req.query;
 
@@ -853,7 +853,7 @@ app.get('/api/nutrition/range/:userId', async (req, res) => {
 // ============================================
 
 // Create or update daily task
-app.post('/api/tasks/update', async (req, res) => {
+app.post('/tasks/update', async (req, res) => {
     const { userId, date, taskId, completed, currentValue } = req.body;
 
     try {
@@ -880,7 +880,7 @@ app.post('/api/tasks/update', async (req, res) => {
 });
 
 // Get daily tasks
-app.get('/api/tasks/:userId/:date', async (req, res) => {
+app.get('/tasks/:userId/:date', async (req, res) => {
     const { userId, date } = req.params;
 
     try {
@@ -900,7 +900,7 @@ app.get('/api/tasks/:userId/:date', async (req, res) => {
 });
 
 // Toggle task completion
-app.put('/api/tasks/toggle', async (req, res) => {
+app.put('/tasks/toggle', async (req, res) => {
     const { userId, date, taskId } = req.body;
 
     try {
@@ -927,7 +927,7 @@ app.put('/api/tasks/toggle', async (req, res) => {
 // ============================================
 
 // Create weight goal
-app.post('/api/goals/weight', async (req, res) => {
+app.post('/goals/weight', async (req, res) => {
     const { userId, currentWeight, targetWeight, startWeight, goalDate, weeklyGoal } = req.body;
 
     try {
@@ -957,7 +957,7 @@ app.post('/api/goals/weight', async (req, res) => {
 });
 
 // Get active weight goal
-app.get('/api/goals/weight/:userId', async (req, res) => {
+app.get('/goals/weight/:userId', async (req, res) => {
     const { userId } = req.params;
 
     try {
@@ -977,7 +977,7 @@ app.get('/api/goals/weight/:userId', async (req, res) => {
 });
 
 // Update weight goal progress
-app.put('/api/goals/weight/:goalId', async (req, res) => {
+app.put('/goals/weight/:goalId', async (req, res) => {
     const { goalId } = req.params;
     const { currentWeight } = req.body;
 
@@ -1002,7 +1002,7 @@ app.put('/api/goals/weight/:goalId', async (req, res) => {
 // ============================================
 
 // Create or update daily meal plan
-app.post('/api/daily-meal-plan', async (req, res) => {
+app.post('/daily-meal-plan', async (req, res) => {
     const { userId, date, mealPlanData, planName, autoGenerated } = req.body;
 
     try {
@@ -1043,7 +1043,7 @@ app.post('/api/daily-meal-plan', async (req, res) => {
 });
 
 // Get daily meal plan
-app.get('/api/daily-meal-plan/:userId/:date', async (req, res) => {
+app.get('/daily-meal-plan/:userId/:date', async (req, res) => {
     const { userId, date } = req.params;
 
     try {
@@ -1063,7 +1063,7 @@ app.get('/api/daily-meal-plan/:userId/:date', async (req, res) => {
 });
 
 // Mark meal as consumed in daily plan
-app.put('/api/daily-meal-plan/consume', async (req, res) => {
+app.put('/daily-meal-plan/consume', async (req, res) => {
     const { userId, date, mealType, consumed } = req.body;
 
     try {
@@ -1109,7 +1109,7 @@ pool.query(`
 });
 
 // Log weight progress
-app.post('/api/progress/weight', async (req, res) => {
+app.post('/progress/weight', async (req, res) => {
     const { userId, weight, date, notes } = req.body;
 
     try {
@@ -1153,7 +1153,7 @@ app.post('/api/progress/weight', async (req, res) => {
 });
 
 // Get weight history
-app.get('/api/progress/weight/:userId', async (req, res) => {
+app.get('/progress/weight/:userId', async (req, res) => {
     const { userId } = req.params;
     const { startDate, endDate } = req.query;
 
@@ -1181,7 +1181,7 @@ app.get('/api/progress/weight/:userId', async (req, res) => {
 });
 
 // Get latest weight
-app.get('/api/progress/weight/:userId/latest', async (req, res) => {
+app.get('/progress/weight/:userId/latest', async (req, res) => {
     const { userId } = req.params;
 
     try {
