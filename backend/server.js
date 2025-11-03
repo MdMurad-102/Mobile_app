@@ -1,5 +1,6 @@
 // Backend API Server for MyDietCoach
 // This server handles all database operations for the mobile app
+// Deployment: Fixed routes to match frontend API_URL structure
 
 const express = require('express');
 const cors = require('cors');
