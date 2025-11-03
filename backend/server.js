@@ -19,8 +19,9 @@ app.use(cors());
 app.use(express.json());
 
 // PostgreSQL Connection Pool
+// Railway provides DATABASE_PUBLIC_URL, fallback to DATABASE_URL for local dev
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: process.env.DATABASE_PUBLIC_URL || process.env.DATABASE_URL,
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
@@ -61,15 +62,15 @@ app.get('/health/db', async (req, res) => {
 
 // Debug endpoint to check DATABASE_URL configuration (remove in production)
 app.get('/health/db-config', (req, res) => {
-    const dbUrl = process.env.DATABASE_URL;
+    const dbUrl = process.env.DATABASE_PUBLIC_URL || process.env.DATABASE_URL;
     if (!dbUrl) {
         return res.json({
             status: 'error',
-            message: 'DATABASE_URL not set',
+            message: 'DATABASE_PUBLIC_URL and DATABASE_URL not set',
             available_vars: Object.keys(process.env).filter(k => k.includes('DATABASE'))
         });
     }
-    
+
     // Parse and mask sensitive info
     try {
         const url = new URL(dbUrl);
