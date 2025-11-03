@@ -4,20 +4,54 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-// Backend API URL - update this with your server URL
-// Using localhost for Expo tunnel or your computer's IP for same network
-const API_URL = __DEV__
-    ? 'http://localhost:3000/api'  // Development (uses Expo tunnel)
-    : 'https://your-backend-url.com/api'; // Production (deployed server)
+// Backend API URL - ALWAYS use production for APK builds
+// Force production URL to prevent localhost connection issues in release builds
+// NOTE: No /api suffix because backend routes are already at root level (e.g., /users/login)
+const API_URL = 'https://mobileapp-production-e097.up.railway.app';
+
+console.log('🌐 API URL:', API_URL);
+console.log('🔧 Environment: Production (Forced)');
 
 // Create axios instance with default config
 const api = axios.create({
     baseURL: API_URL,
-    timeout: 10000,
+    timeout: 30000, // Increased to 30 seconds
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+// Add request interceptor for error handling
+api.interceptors.request.use(
+    (config) => {
+        console.log(`📡 ${config.method?.toUpperCase()} ${config.url}`);
+        return config;
+    },
+    (error) => {
+        console.error('❌ Request error:', error);
+        return Promise.reject(error);
+    }
+);
+
+// Add response interceptor for error handling
+api.interceptors.response.use(
+    (response) => {
+        console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`);
+        return response;
+    },
+    (error) => {
+        if (error.code === 'ECONNABORTED') {
+            console.error('⏱️ Request timeout');
+        } else if (error.response) {
+            console.error(`❌ Server error: ${error.response.status}`);
+        } else if (error.request) {
+            console.error('🌐 Network error - no response received');
+        } else {
+            console.error('❌ Request setup error:', error.message);
+        }
+        return Promise.reject(error);
+    }
+);
 
 // ============================================
 // TYPE DEFINITIONS
