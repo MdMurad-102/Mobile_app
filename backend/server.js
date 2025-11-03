@@ -7,6 +7,9 @@ const { Pool } = require('pg');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+// Import auto-migration
+const { autoMigrate } = require('./migrations/auto-migrate');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -1201,12 +1204,30 @@ app.get('/api/progress/weight/:userId/latest', async (req, res) => {
 // START SERVER
 // ============================================
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 MyDietCoach API Server running on port ${PORT}`);
-    console.log(`📡 Health check: http://localhost:${PORT}/health`);
-    console.log(`📱 Server accessible from any network on port ${PORT}`);
-    console.log(`💡 To connect from mobile: Find your computer's IP and use http://YOUR_IP:${PORT}/api`);
-});
+// Run auto-migration before starting the server
+async function startServer() {
+    try {
+        console.log('🔧 Starting MyDietCoach API Server...\n');
+
+        // Auto-create database tables if they don't exist
+        await autoMigrate(pool);
+
+        // Start the server
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 MyDietCoach API Server running on port ${PORT}`);
+            console.log(`📡 Health check: http://localhost:${PORT}/health`);
+            console.log(`📱 Server accessible from any network on port ${PORT}`);
+            console.log(`💡 To connect from mobile: Find your computer's IP and use http://YOUR_IP:${PORT}/api`);
+            console.log('\n✨ Server ready to accept connections!\n');
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
+}
+
+// Start the server
+startServer();
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
