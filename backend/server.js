@@ -41,6 +41,24 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', message: 'MyDietCoach API is running' });
 });
 
+// Database health check
+app.get('/health/db', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT NOW()');
+        res.json({ 
+            status: 'ok', 
+            message: 'Database connected', 
+            timestamp: result.rows[0].now 
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            status: 'error', 
+            message: 'Database connection failed', 
+            error: error.message 
+        });
+    }
+});
+
 // ============================================
 // USER ROUTES
 // ============================================
