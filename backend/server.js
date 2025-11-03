@@ -45,16 +45,50 @@ app.get('/health', (req, res) => {
 app.get('/health/db', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
-        res.json({ 
-            status: 'ok', 
-            message: 'Database connected', 
-            timestamp: result.rows[0].now 
+        res.json({
+            status: 'ok',
+            message: 'Database connected',
+            timestamp: result.rows[0].now
         });
     } catch (error) {
-        res.status(500).json({ 
-            status: 'error', 
-            message: 'Database connection failed', 
-            error: error.message 
+        res.status(500).json({
+            status: 'error',
+            message: 'Database connection failed',
+            error: error.message
+        });
+    }
+});
+
+// Debug endpoint to check DATABASE_URL configuration (remove in production)
+app.get('/health/db-config', (req, res) => {
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+        return res.json({
+            status: 'error',
+            message: 'DATABASE_URL not set',
+            available_vars: Object.keys(process.env).filter(k => k.includes('DATABASE'))
+        });
+    }
+    
+    // Parse and mask sensitive info
+    try {
+        const url = new URL(dbUrl);
+        res.json({
+            status: 'ok',
+            host: url.hostname,
+            port: url.port,
+            database: url.pathname.substring(1),
+            protocol: url.protocol,
+            has_username: !!url.username,
+            has_password: !!url.password
+        });
+    } catch (error) {
+        res.json({
+            status: 'error',
+            message: 'Invalid DATABASE_URL format',
+            error: error.message,
+            raw_value_length: dbUrl.length,
+            starts_with: dbUrl.substring(0, 15)
         });
     }
 });
